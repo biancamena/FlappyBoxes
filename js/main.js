@@ -47,20 +47,28 @@ var mainState = {
    
    //Add in pipes over 1.5 seconds to the screen
    this.timer = game.time.events.loop(1500, this.addRowOfPipes, this);
+   
+   var spaceKey = this.game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
+   spaceKey.onDown.add(this.jump, this); 
+    
+    this.score = 0;
+    this.labelScore = game.add.text(20,20,"0", {font:"30px Arial", fill:"#ffffff"});
+    
     
    //When spacebar is pressed, we want to make the bird jump!
-   var spaceKey = this.game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
-   spaceKey.onDown.add(this.jump, this);
     
   },
   
   update: function () {
     //This function is called 60 times a second
     //It contains the games logic and all time related actions
+    //checks if the bird is outside of the gamescreen
     
     if (this.bird.inWorld == false){
       this.restartGame();
     }
+    
+    game.physics.arcade.overlap(this.bird, this.pipes, this.restartGame, null, this);
   },
   
   addOnePipe: function (x,y){
@@ -82,11 +90,13 @@ var mainState = {
   addRowOfPipes: function (){
     var hole = Math.floor(Math.random()*5) + 1;
     
-    for (var i = 0; i < 8; i++){
+    for (var i = 0; i < 8; i++)
       if (i != hole && i != hole + 1){
         this.addOnePipe(400, i*60 + 10);          
       }
-    }
+    
+    this.score +=1;
+    this.labelScore.text = this.score;
   },
   
   jump: function (){
